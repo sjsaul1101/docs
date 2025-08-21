@@ -23,6 +23,11 @@
     "global": {
       "anchors": [
         {
+          "anchor": "Smart Contract",
+          "href": "https://docs.onchainbrews.wtf",
+          "icon": "book-open-cover"
+        }
+        {
           "anchor": "Documentation",
           "href": "https://docs.onchainbrews.wtf",
           "icon": "book-open-cover"
