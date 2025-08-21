@@ -8,11 +8,11 @@ description: "Everything you need to know about minting an on-chain brew during 
 - Each dutch auction lasts 420 blocks, starting at `1 ETH` and ending at  `.001 ETH`
 - Exactly **one** mint is allowed per auction (enforced by `auctionMinted[id]`)
 - If a full auction passes and no brew is minted, a new brew is generated for the next auction
-- Every 10th token is auto-minted to `owner()` for the next auction and is **ineligible** for a minter reward (but can later be chosen as the random-holder to receive a reward)
+- Every 10th token is auto-minted to `owner()` for the next auction and is **ineligible** for a minter  minter reward. (but can later be chosen as the random-holder to receive a reward)
 
 ### A New Auction Every 420 Blocks
 
-Every 420 blocks, a new brew is available for mint. Each dutch auction begins at 1 ETH and decreases linearly with each block until it reaches 0.0001 ETH. 
+Every 420 blocks, a new brew is available for mint. Each dutch auction begins at 1 ETH and decreases linearly with each block until it reaches 0.0001 ETH.
 
 ```solidity
 /// dutch auction duration
@@ -45,10 +45,10 @@ mapping(uint256 => bool) public auctionMinted;
 function currentAuctionMinted();
 ```
 
-Minting results in the current brew being created on the Ethereum blockchain. 
+Minting results in the current brew being created on the Ethereum blockchain.
 
 ```solidity
 function mint()
 ```
 
-Every 10th brew minted results in a bonus brew, which is sent to the `owner()` address. This mechanism was designed to ensure a meaningful supply of the collection accumulates in the custody of the contract owner over time. 
+Every 10th brew minted results in a bonus brew, which is sent to the `owner()` address. This mechanism was designed to ensure a meaningful supply of the collection accumulates in the custody of the contract owner over time.

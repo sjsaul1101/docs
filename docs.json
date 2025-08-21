@@ -28,7 +28,8 @@
                     {
                         "group": "Rewards",
                         "pages": [
-                            "rewards"
+                            "rewards",
+                            "rewards_technical"
                         ]
                     }
                 ]
