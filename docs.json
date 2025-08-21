@@ -1,63 +1,86 @@
 {
-  "$schema": "https://mintlify.com/docs.json",
-  "theme": "mint",
-  "name": "On-Chain Brews",
-  "colors": {
-    "primary": "#16A34A",
-    "light": "#07C983",
-    "dark": "#15803D"
-  },
-  "favicon": "/favicon.svg",
-  "navigation": {
-    "tabs": [
-      {
-        "tab": "Guides",
-        "groups": [
-          {
-            "group": "Getting started",
-            "pages": ["index", "minting", "development"]
-          }
-        ]
-      }
-    ],
-    "global": {
-      "anchors": [
-        {
-          "anchor": "Smart Contract",
-          "href": "https://docs.onchainbrews.wtf",
-          "icon": "book-open-cover"
-        },
-        {
-          "anchor": "Documentation",
-          "href": "https://docs.onchainbrews.wtf",
-          "icon": "book-open-cover"
+    "$schema": "https://mintlify.com/docs.json",
+    "theme": "mint",
+    "name": "On-Chain Brews",
+    "colors": {
+        "primary": "#16A34A",
+        "light": "#07C983",
+        "dark": "#15803D"
+    },
+    "favicon": "/favicon.svg",
+    "navigation": {
+        "tabs": [
+            {
+                "tab": "Guides",
+                "groups": [
+                    {
+                        "group": "Introduction",
+                        "pages": [
+                            "index"
+                        ]
+                    },
+                    {
+                        "group": "Minting",
+                        "pages": [
+                            "minting"
+                        ]
+                    },
+                    {
+                        "group": "Rewards",
+                        "pages": [
+                            "development"
+                        ]
+                    }
+                ]
+            }
+        ],
+        "global": {
+            "anchors": [
+                {
+                    "anchor": "Documentation",
+                    "href": "https://docs.onchainbrews.wtf",
+                    "icon": "book-open-cover"
+                },
+                {
+                    "anchor": "Smart Contract",
+                    "href": "https://docs.onchainbrews.wtf",
+                    "icon": "book-open-cover"
+                }
+            ]
         }
-      ]
+    },
+    "logo": {
+        "light": "/logo/light.svg",
+        "dark": "/logo/dark.svg"
+    },
+    "navbar": {
+        "links": [
+            {
+                "label": "X",
+                "href": "https://x.com/onchainbrews"
+            }
+        ],
+        "primary": {
+            "type": "button",
+            "label": "Dashboard",
+            "href": "https://dashboard.mintlify.com"
+        }
+    },
+    "contextual": {
+        "options": [
+            "copy",
+            "view",
+            "chatgpt",
+            "claude",
+            "perplexity",
+            "mcp",
+            "cursor",
+            "vscode"
+        ]
+    },
+    "footer": {
+        "socials": {
+            "x": "https://x.com/onchainbrews"
+        }
     }
-  },
-  "logo": {
-    "light": "/logo/light.svg",
-    "dark": "/logo/dark.svg"
-  },
-  "navbar": {
-    "links": [
-      {
-        "label": "X",
-        "href": "https://x.com/onchainbrews"
-      }
-    ],
-    "primary": {
-      "type": "button",
-      "label": "Dashboard",
-      "href": "https://dashboard.mintlify.com"
-    }
-  },
-  "contextual": {
-    "options": ["copy", "view", "chatgpt", "claude", "perplexity", "mcp", "cursor", "vscode"]
-  },
-  "footer": {
-    "socials": {
-      "x": "https://x.com/onchainbrews"
-    }
-  }
 }
