@@ -22,7 +22,9 @@
                     {
                         "group": "Minting",
                         "pages": [
-                            "minting"
+                            "minting",
+                            "traits",
+                            "on_chain"
                         ]
                     },
                     {
