@@ -3,14 +3,26 @@ title: "Traits"
 description: "Description of your new file."
 ---
 
-On-Chain brews are represented as SVGs that are permenantly stored on the ethereum blockchain. There are four different categories: 
+### Layer Organization
 
-1. Background
-2. Brew
-3. Mug
-4. Top
+On-Chain brews are represented as SVGs that are permenantly stored on the ethereum blockchain. 
 
-Traits can be common, rare, legendary, or epic. 
+```solidity
+/// each trait contains a name, an svg snippet, and a weight
+struct Trait { 
+	string name; 
+	string svg; 
+	uint16 weight;
+}
+
+/// traits are assigned to 1 of 4 categories
+string[4] public categories = ["Background", "Brew", "Mug", "Top"];
+
+/// categories are stored and tracked on-chain
+mapping(string => Trait[]) public traitCategories;
+```
+
+Traits can be common, rare, legendary, or epic.
 
 ### Backgrounds
 
