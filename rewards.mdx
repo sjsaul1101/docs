@@ -1,93 +1,38 @@
 ---
 title: "Rewards"
-description: "Preview changes locally to update your docs"
+description: "Most projects run out of steam after the collection mints out and the founders splurge the ETH raised on a Miami penthouse. On-Chain Brews is built different — the reward system is wired to keep both minters and collectors engaged as the collection (and community) grows."
 ---
 
-<Info>
-  **Prerequisites**:
+### Overview
 
-  - Node.js version 19 or higher
-  - A docs repository with a `docs.json` file
-</Info>
+- Every time a brew is minted, there’s a chance for a reward
+- Rewards are **small **(and frequent) or **large** (and very rare)
+- Reward eligibility is determined on-chain with no additional third-party dependencies
+- There’s a 256-block window to claim a reward
+- When a reward is claimed, ETH is distributed to the minter, the current holder of a random token, and the contract owner
+- Rewards are designed to **scale with demand**
 
-Follow these steps to install and run Mintlify on your operating system.
+### Mint Rewards
 
-<Steps>
-  <Step title="Install the Mintlify CLI">
-    ```bash
-    npm i -g mint
-    ```
-  </Step>
-  <Step title="Preview locally">
-    Navigate to your docs directory where your `docs.json` file is located, and run the following command:
+Every time a brew is minted, there's a chance a portion of the current contract balance will be distributed as a reward. Rewards aren't just for the minter - they also go to a random holder and the contract owner.
 
-    ```bash
-    mint dev
-    ```
+- A **large reward** consists of ~50% of the contract balance and has a 1 in 420 chance of occuring
+- A **small reward** consists of ~10% of the contract balance and has a 1 in 10 chance of occuring
 
-    A local preview of your documentation will be available at `http://localhost:3000`.
-  </Step>
-</Steps>
+The amounts are appoximate - more on that below - and distributed to the minter, random holder, and contract owner according to this chart:
 
-## Custom ports
+|                  | **Odds** | **Minter** | **Random Holder** | **Contract Owner** |
+| :--------------- | :------- | :--------- | :---------------- | :----------------- |
+| **Large Reward** | 1 in 420 | ~49%       | ~9%               | ~9%                |
+| **Small Reward** | 1 in 10  | ~5%        | ~1%               | ~1%                |
 
-By default, Mintlify uses port 3000. You can customize the port Mintlify runs on by using the `--port` flag. For example, to run Mintlify on port 3333, use this command:
+### **Eligibility Delay**
 
-```bash
-mint dev --port 3333
-```
+A token’s reward outcome is determined **one block after** it’s minted using `blockhash(mintBlock)`. Until the minting block is sealed, no one can know the outcome. This prevents having to use a third-party service like chainlink for randomization.
 
-If you attempt to run Mintlify on a port that's already in use, it will use the next available port:
+### **Claim Window**
 
-```md
-Port 3000 is already in use. Trying 3001 instead.
-```
+Ethereum exposes `blockhash` only for the last 256 blocks; if a claim is attempted after that, `blockhash(mintBlock) == 0` and the token is **not eligible** (effectively creating a soft deadline to claim within ~256 blocks).
 
-## Mintlify versions
-
-Please note that each CLI release is associated with a specific version of Mintlify. If your local preview does not align with the production version, please update the CLI:
-
-```bash
-npm mint update
-```
-
-## Validating links
-
-The CLI can assist with validating links in your documentation. To identify any broken links, use the following command:
-
-```bash
-mint broken-links
-```
-
-## Deployment
-
-If the deployment is successful, you should see the following:
-
-<Frame>
-  <img
-    src="/images/checks-passed.png"
-    alt="Screenshot of a deployment confirmation message that says All checks have passed."
-    style={{ borderRadius:"0.5rem" }}
-  />
-</Frame>
-
-## Code formatting
-
-We suggest using extensions on your IDE to recognize and format MDX. If you're a VSCode user, consider the [MDX VSCode extension](https://marketplace.visualstudio.com/items?itemName=unifiedjs.vscode-mdx) for syntax highlighting, and [Prettier](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode) for code formatting.
-
-## Troubleshooting
-
-<AccordionGroup>
-  <Accordion title='Error: Could not load the "sharp" module using the darwin-arm64 runtime'>
-    This may be due to an outdated version of node. Try the following:
-
-    1. Remove the currently-installed version of the CLI: `npm remove -g mint`
-    2. Upgrade to Node v19 or higher.
-    3. Reinstall the CLI: `npm i -g mint`
-  </Accordion>
-  <Accordion title="Issue: Encountering an unknown error">
-    Solution: Go to the root of your device and delete the `~/.mintlify` folder. Then run `mint dev` again.
-  </Accordion>
-</AccordionGroup>
-
-Curious about what changed in the latest CLI version? Check out the [CLI changelog](https://www.npmjs.com/package/mintlify?activeTab=versions).
+- Currently, a bot is set up to auto-process claims on behalf of onchainbrews.eth
+- As a fallback, anyone can manually trigger the claim function within the 256-block window.
