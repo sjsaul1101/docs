@@ -35,14 +35,29 @@ mapping(string => Trait[]) public traitCategories;
 
 ### Admin:  Authoring & Maintaining the Art
 
-The layers are managed by upsert and remove functions on the renderer contract. This is to allow for continued updates until the renderer contract is renounced. 
-
-- `upsertTrait(category, name, svg, weight)`**(onlyOwner):**  Adds a new trait or updates an existing one **by name** within a category. This lets you:
-  - Publish new traits over time (e.g., seasonal backgrounds).
-  - Tweak rarity (`weight`) without changing deployed code.
-  - Patch/iterate on SVG fragments (fix a pixel, adjust a color) by overwriting `svg` for that `name`.
-- `removeTrait(category, name)`**(onlyOwner):**  Deletes a trait via swap‑and‑pop pattern. Reverts if the named trait is not found.
-
 <Info>
   Because the owner can add/update/remove traits, the art set is **mutable** until ownership is renounced. This is a conscious choice to allow live curation.
 </Info>
+
+The layers are managed by upsert and remove functions on the renderer contract. This is to allow for continued updates until the renderer contract is renounced. This allows the contract owner to:
+
+- Publish new traits over time (e.g., seasonal backgrounds).
+- Tweak rarity (`weight`) without changing deployed code.
+- Patch/iterate on SVG fragments (fix a pixel, adjust a color) by overwriting `svg` for that `name`.
+
+  ```solidity
+  /// adds a new trait or updates an existing one by name within a category 
+  function upsertTrait(
+  	string memory category,
+  	string memory name,
+  	string memory svg,
+  	uint16 weight
+  ) external onlyOwner {};
+  
+  /// deletes a trait via swap‑and‑pop pattern
+  /// reverts if the named trait is not found
+  function removeTrait(
+  	string memory category, 
+  	string memory name
+  ) external onlyOwner {};
+  ```
