@@ -23,8 +23,8 @@
                         "group": "Brews",
                         "pages": [
                             "minting",
-                            "traits",
-                            "on_chain"
+                            "on_chain",
+                            "traits"
                         ]
                     },
                     {
