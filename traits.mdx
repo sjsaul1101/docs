@@ -3,62 +3,86 @@ title: "Traits"
 description: "Traits of different rarities make brews fun to collect. The renderer contract supports the addition of new traits, too. "
 ---
 
-### Rarity
+### Trait Randomization
 
-Traits can be common, rare, legendary, or epic.
+Traits can be**common, uncommon, rare, epic, or legendary** . Here's how it works:
+
+- **Seed source:** `core.getAuctionSeed(auctionId)` returns a per‑auction seed derived in the core contract from chain data.
+- `getTrait(category, auctionId)`**:**
+  1. Sums `weight` across all traits in `category`.
+  2. Computes `rand = H(category, auctionId, seed) % totalWeight`.
+  3. Scans cumulatively over traits; the bucket where `rand < acc` is the selected **trait name**.
+- Given the same `auctionId`and trait table, selection is reproducible across nodes and time. That means the artwork for an auction is **fixed** once the seed is set for a given auction in the core contract. 
+
+### Layer Retrieval
+
+- `getSVGFragment(category, traitName)`**:** Looks up the stored SVG fragment string for the named trait.
+- `getTraits(auctionId)`**:** Convenience that resolves the selected trait **names** for each category in canonical order (`Background`, `Brew`, `Mug`, `Top`).
+
+### SVG Composition (The Image Itself)
+
+- `buildSVG(auctionId)`**:**
+  1. Starts with an `<svg>` root sized `1080×1080`.
+  2. For each category in `categories` order, resolves the chosen **name** with `getTrait` and fetches its **fragment** with `getSVGFragment`.
+  3. Concatenates fragments in order to form a single SVG document.
+  4. Appends the closing `</svg>` tag and returns the complete **image** string.
+
+<Info>
+  **Layering matters:** The array order is the z‑order. Background is written first, then Brew, then Mug, then Top.
+</Info>
 
 ### Backgrounds
 
-| **Name                          ** | **Rarity                          ** | **Weight                      ** |
-| ---------------------------------- | ------------------------------------ | -------------------------------- |
-| Blue                               | Common                               |                                  |
-| Pink                               |                                      |                                  |
-| Purple                             |                                      |                                  |
-| Black                              |                                      |                                  |
+| \*\*Name                          \*\* | \*\*Rarity                          \*\* | \*\*Weight                      \*\* |
+| -------------------------------------- | ---------------------------------------- | ------------------------------------ |
+| Blue                                   | Common                                   |                                      |
+| Pink                                   |                                          |                                      |
+| Purple                                 |                                          |                                      |
+| Black                                  |                                          |                                      |
 
 ### Brews
 
-| **Name                          ** | **Rarity                          ** | **Weight                      ** |
-| :--------------------------------- | :----------------------------------- | -------------------------------- |
-| Miner Lite                         | Common                               |                                  |
-| Blockweiser                        |                                      |                                  |
-| gweiness                           |                                      |                                  |
-| HOLDweisen                         |                                      |                                  |
-| Bandit IPA                         |                                      |                                  |
-| Juicy Brew                         |                                      |                                  |
-| Stoutoshi                          |                                      |                                  |
-| Slime                              |                                      |                                  |
+| \*\*Name                          \*\* | \*\*Rarity                          \*\* | \*\*Weight                      \*\* |
+| :------------------------------------- | :--------------------------------------- | ------------------------------------ |
+| Miner Lite                             | Common                                   |                                      |
+| Blockweiser                            |                                          |                                      |
+| gweiness                               |                                          |                                      |
+| HOLDweisen                             |                                          |                                      |
+| Bandit IPA                             |                                          |                                      |
+| Juicy Brew                             |                                          |                                      |
+| Stoutoshi                              |                                          |                                      |
+| Slime                                  |                                          |                                      |
 
 ### Mugs
 
-| **Name                          ** | **Rarity                          ** | **Weight                      ** |
-| :--------------------------------- | :----------------------------------- | -------------------------------- |
-| Glass                              | Common                               |                                  |
-| Ceramic                            |                                      |                                  |
-| Ice                                |                                      |                                  |
-| Wood                               |                                      |                                  |
-| Steel                              |                                      |                                  |
-| Charcoal                           |                                      |                                  |
-| Rose Gold                          |                                      |                                  |
-| Gold                               |                                      |                                  |
-| Holographic                        |                                      |                                  |
-| Earth                              |                                      |                                  |
+| \*\*Name                          \*\* | \*\*Rarity                          \*\* | \*\*Weight                      \*\* |
+| :------------------------------------- | :--------------------------------------- | ------------------------------------ |
+| Glass                                  | Common                                   |                                      |
+| Ceramic                                |                                          |                                      |
+| Ice                                    |                                          |                                      |
+| Wood                                   |                                          |                                      |
+| Steel                                  |                                          |                                      |
+| Charcoal                               |                                          |                                      |
+| Rose Gold                              |                                          |                                      |
+| Gold                                   |                                          |                                      |
+| Holographic                            |                                          |                                      |
+| Earth                                  |                                          |                                      |
 
 ### Tops
 
-| **Name                          ** | **Rarity                          ** | **Weight                      ** |
-| :--------------------------------- | :----------------------------------- | -------------------------------- |
-| Regular Foam                       | Common                               |                                  |
-| Flat Foam                          | Common                               |                                  |
-| Tall Foam                          | Common                               |                                  |
-| Drippy Foam                        |                                      |                                  |
-| Igloo                              |                                      |                                  |
-| Fyre                               |                                      |                                  |
-| Duck                               |                                      |                                  |
-| Diamond                            |                                      |                                  |
-| Rain                               |                                      |                                  |
-| Red Trucker                        |                                      |                                  |
-| Green Trucker                      |                                      |                                  |
-| Rainbow                            |                                      |                                  |
-| Poop                               |                                      |                                  |
-| Skull                              |                                      |                                  |
+| \*\*Name                          \*\* | \*\*Rarity                          \*\* | \*\*Weight                      \*\* |
+| :------------------------------------- | :--------------------------------------- | ------------------------------------ |
+| Regular Foam                           | Common                                   |                                      |
+| Flat Foam                              | Common                                   |                                      |
+| Tall Foam                              | Common                                   |                                      |
+| Drippy Foam                            |                                          |                                      |
+| Igloo                                  |                                          |                                      |
+| Fyre                                   |                                          |                                      |
+| Duck                                   |                                          |                                      |
+| Diamond                                |                                          |                                      |
+| Rain                                   |                                          |                                      |
+| Red Trucker                            |                                          |                                      |
+| Green Trucker                          |                                          |                                      |
+| Rainbow                                |                                          |                                      |
+| Poop                                   |                                          |                                      |
+| Skull                                  |                                          |                                      |
