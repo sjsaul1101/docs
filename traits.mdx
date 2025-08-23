@@ -5,14 +5,14 @@ description: "Traits of different rarities make brews fun to collect. The render
 
 ### Trait Randomization
 
-Traits can be**common, uncommon, rare, epic, or legendary** . Here's how it works:
+Traits can be **common, uncommon, rare, epic, or legendary**. Here's how it works:
 
 - **Seed source:** `core.getAuctionSeed(auctionId)` returns a per‑auction seed derived in the core contract from chain data.
 - `getTrait(category, auctionId)`**:**
   1. Sums `weight` across all traits in `category`.
   2. Computes `rand = H(category, auctionId, seed) % totalWeight`.
   3. Scans cumulatively over traits; the bucket where `rand < acc` is the selected **trait name**.
-- Given the same `auctionId`and trait table, selection is reproducible across nodes and time. That means the artwork for an auction is **fixed** once the seed is set for a given auction in the core contract. 
+- Given the same `auctionId`and trait table, selection is reproducible across nodes and time. That means the artwork for an auction is **fixed** once the seed is set for a given auction in the core contract.
 
 ### Layer Retrieval
 
@@ -33,16 +33,16 @@ Traits can be**common, uncommon, rare, epic, or legendary** . Here's how it work
 
 ### Backgrounds
 
-| **Name ** | **Rarity** | **Weight** |
-| --------- | ---------- | ---------- |
-| Blue      | Common     |            |
-| Pink      |            |            |
-| Purple    |            |            |
-| Black     |            |            |
+| **Name** | **Rarity** | **Weight** |
+| -------- | ---------- | ---------- |
+| Blue     | Common     |            |
+| Pink     |            |            |
+| Purple   |            |            |
+| Black    |            |            |
 
 ### Brews
 
-| **Name **   | **Rarity** | **Weight** |
+| **Name**    | **Rarity** | **Weight** |
 | :---------- | :--------- | :--------- |
 | Miner Lite  | Common     |            |
 | Blockweiser |            |            |
@@ -55,7 +55,7 @@ Traits can be**common, uncommon, rare, epic, or legendary** . Here's how it work
 
 ### Mugs
 
-| **Name **   | **Rarity** | **Weight** |
+| **Name**    | **Rarity** | **Weight** |
 | :---------- | :--------- | :--------- |
 | Glass       | Common     |            |
 | Ceramic     |            |            |
@@ -70,7 +70,7 @@ Traits can be**common, uncommon, rare, epic, or legendary** . Here's how it work
 
 ### Tops
 
-| **Name **     | **Rarity** | **Weight** |
+| **Name**      | **Rarity** | **Weight** |
 | :------------ | :--------- | :--------- |
 | Regular Foam  | Common     |            |
 | Flat Foam     | Common     |            |
