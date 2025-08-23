@@ -39,10 +39,10 @@ mapping(string => Trait[]) public traitCategories;
   Because the owner can add/update/remove traits, the art set is **mutable** until ownership is renounced. This is a conscious choice to allow live curation.
 </Info>
 
-The layers are managed by upsert and remove functions on the renderer contract. This is to allow for continued updates until the renderer contract is renounced. This allows the contract owner to:
+The SVG layers are managed by upsert and remove functions on the renderer contract. This is to allow for continued updates until the renderer contract is renounced. This allows the contract owner to:
 
 - Publish new traits over time (e.g., seasonal backgrounds).
-- Tweak rarity (`weight`) without changing deployed code.
+- Tweak rarity `weight` without changing deployed code.
 - Patch/iterate on SVG fragments (fix a pixel, adjust a color) by overwriting `svg` for that `name`.
 
   ```solidity
