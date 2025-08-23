@@ -20,7 +20,7 @@
                         ]
                     },
                     {
-                        "group": "Minting",
+                        "group": "Brews",
                         "pages": [
                             "minting",
                             "traits",
