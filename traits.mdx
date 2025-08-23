@@ -7,21 +7,6 @@ description: "On-Chain brews are represented as SVGs that are permanently stored
 
 On-Chain brews are represented as SVGs that are permenantly stored on the ethereum blockchain.
 
-```solidity
-/// each trait contains a name, an svg snippet, and a weight
-struct Trait { 
-	string name; 
-	string svg; 
-	uint16 weight;
-}
-
-/// traits are assigned to 1 of 4 categories
-string[4] public categories = ["Background", "Brew", "Mug", "Top"];
-
-/// categories are stored and tracked on-chain
-mapping(string => Trait[]) public traitCategories;
-```
-
 Traits can be common, rare, legendary, or epic.
 
 ### Backgrounds

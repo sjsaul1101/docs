@@ -3,4 +3,46 @@ title: "Rendering Brews"
 description: "Learn about how On-Chain brews are stored and rendered"
 ---
 
-The art for On-Chain brews is fully on-chain and managed by a seperate renderer contract. Initially, this provides a way to debug and fix broken layers that would otherwise be bricked forever. Long-term, a seperate renderer enables the addition of new traits, even after the core contract has been renounced.
+This companion contract (`OnChainBrewsRenderer`) is responsible for composing SVG art **on-chain** and serving standard ERC‑721 metadata via `tokenURI`. Below is a section‑by‑section walkthrough of how images are generated, layered, and hosted entirely from contract storage.
+
+### Linking to the Core Contract
+
+The renderer is linked to the main (core) contract via `IOnChainBrews core`  and queries the core contract for:
+
+- `tokenIdToAuction(tokenId)` → which auction produced a token
+- `getAuctionSeed(auctionId)` → deterministic per‑auction seed for traits
+
+### Data Model
+
+The metadata (description and traits) for On-Chain brews are stored in the core contract, which queries the renderer for the SVG image of each brew.
+
+```solidity
+/// each trait contains a name, an svg snippet, and a weight
+struct Trait { 
+	string name;   /// human‑readable trait name (e.g., "amber", "frosted mug")
+	string svg;    /// an SVG fragment (layer) stored directly on-chain 
+	uint16 weight; /// relative rarity used in weighted random selection
+}
+
+/// traits are assigned to 1 of 4 categories
+/// this defines both attributes order and  
+/// layering order when composing the final SVG
+string[4] public categories = ["Background", "Brew", "Mug", "Top"];
+
+/// a registry of traits per category
+mapping(string => Trait[]) public traitCategories;
+```
+
+### Admin:  Authoring & Maintaining the Art
+
+The layers are managed by upsert and remove functions on the renderer contract. This is to allow for continued updates until the renderer contract is renounced. 
+
+- `upsertTrait(category, name, svg, weight)`**(onlyOwner):**  Adds a new trait or updates an existing one **by name** within a category. This lets you:
+  - Publish new traits over time (e.g., seasonal backgrounds).
+  - Tweak rarity (`weight`) without changing deployed code.
+  - Patch/iterate on SVG fragments (fix a pixel, adjust a color) by overwriting `svg` for that `name`.
+- `removeTrait(category, name)`**(onlyOwner):**  Deletes a trait via swap‑and‑pop pattern. Reverts if the named trait is not found.
+
+<Info>
+  Because the owner can add/update/remove traits, the art set is **mutable** until ownership is renounced. This is a conscious choice to allow live curation.
+</Info>
