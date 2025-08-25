@@ -14,7 +14,7 @@ A token’s reward outcome is determined **one block after** it’s been minted 
 Ethereum exposes `blockhash` only for the last 256 blocks; if a claim is attempted after that, `blockhash(mintBlock) == 0` and the token is **not eligible**.
 
 <Info>
-  Currently, there is a bot processing claims automatically, but as an on-chain fallback, anyone can call the "claim" function and trigger the distribution of rewards within the 256-block window.
+  Currently, a bot is processing rewards automatically. As an on-chain fallback, anyone can call the "claim" function and trigger the distribution of rewards within the 256-block window.
 </Info>
 
 ### Fairness
