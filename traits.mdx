@@ -1,11 +1,11 @@
 ---
 title: "Traits"
-description: "Traits of different rarities make brews fun to collect. The renderer contract supports the addition of new traits, too. "
+description: "TL;DR for collectors: four layers, weighted RNG, deterministic per-auction seed, art and metadata hosted entirely on-chain—and new traits can drop anytime to keep the collection spicy."
 ---
 
 ### Trait Randomization
 
-Traits can be **common, uncommon, rare, epic, or legendary**. Here's how it works:
+Traits can be **common, uncommon, rare, epic, or legendary**. For each category, we spin a deterministic on-chain wheel using the core contract’s per-auction seed. 
 
 - **Seed source:** `core.getAuctionSeed(auctionId)` returns a per‑auction seed derived in the core contract from chain data.
 - `getTrait(category, auctionId)`**:**
@@ -16,10 +16,14 @@ Traits can be **common, uncommon, rare, epic, or legendary**. Here's how it work
 
 ### Layer Retrieval
 
+The same `auctionId` \+ same trait tables = **the same result forever**. Everyone renders the same art because everything about the brew lives on-chain.
+
 - `getSVGFragment(category, traitName)`**:** Looks up the stored SVG fragment string for the named trait.
 - `getTraits(auctionId)`**:** Convenience that resolves the selected trait **names** for each category in canonical order (`Background`, `Brew`, `Mug`, `Top`).
 
 ### SVG Composition (The Image Itself)
+
+The renderer stitches the SVG, Base64-encodes it, and serves it inside the token’s `tokenURI` as a data URI—no IPFS pins to rot, no servers to trust. Metadata includes the four trait names so marketplaces can show attributes cleanly.
 
 - `buildSVG(auctionId)`**:**
   1. Starts with an `<svg>` root sized `1080×1080`.
