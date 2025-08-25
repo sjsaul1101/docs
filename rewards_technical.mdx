@@ -1,4 +1,34 @@
 ---
-title: "On-Chain Randomization"
-description: "Description of your new file."
+title: "Randomization"
+description: "Every held token is eligible for a share of future rewards. Randomization is fully trustless and on-chain."
 ---
+
+### Randomness
+
+For an eligible token, the contract derives `randomTokenId` from `H("holder", seed)` mod `supplyAtMint` (with a one-step re-roll if it equals the minter’s own token and supply \> 1). The rweard for`ownerOf(randomTokenId)`occurs at claim time, which means that _the reward will be sent to whomever is holding the token when the reward is claimed._
+
+### Eligibility
+
+A token’s reward outcome is determined **one block after** it’s been minted using `blockhash(mintBlock)`. Because the mint block's hash is not determined until the block is finalized and minting block is sealed, no one can know the outcome.
+
+Ethereum exposes `blockhash` only for the last 256 blocks; if a claim is attempted after that, `blockhash(mintBlock) == 0` and the token is **not eligible**.
+
+<Info>
+  Currently, there is a bot processing claims automatically, but as an on-chain fallback, anyone can call the "claim" function and trigger the distribution of rewards within the 256-block window.
+</Info>
+
+### Fairness
+
+Each token draws a reward  using`seed = keccak256(tokenId, blockhash(mintBlock))`. The contract first checks for a big reward; if the token is not elibile, the contract re-rolls for a small reward.
+
+```solidity
+function _drawReward(uint256 seed) internal pure returns (Reward) {
+	uint256 rBig = uint256(keccak256(abi.encodePacked("big", seed)));
+        if (rBig % BIG_ODDS == 0) 
+			return Reward.Big;
+   	uint256 rSml = uint256(keccak256(abi.encodePacked("small", seed)));
+        if (rSml % SMALL_ODDS == 0) 
+			return Reward.Small;
+        return Reward.None;
+    }
+```
