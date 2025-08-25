@@ -31,7 +31,8 @@
                         "group": "Rewards",
                         "pages": [
                             "rewards",
-                            "rewards_technical"
+                            "rewards_technical",
+                            "rewards_scale"
                         ]
                     }
                 ]
