@@ -1,4 +1,77 @@
 ---
 title: "Scaling With Demand"
-description: "Description of your new file."
+description: "The rewards system is designed to scale with demand and is the heart of the contract's sustainability. "
 ---
+
+TLDR; Rewards are sized as bips of the **current balance**, but multiplied by a **scale** `s ∈ (0, 1]` chosen to target a fixed **expected reward per mint**.
+
+### Building Blocks
+
+The basic mechanisms that make up the reward scaling system:
+
+**Base expected drain fraction** (if `s = 1`):
+
+- `f = BIG_BASE_BIPS/(10_000 × BIG_ODDS) + SMALL_BASE_BIPS/(10_000 × SMALL_ODDS) `with defaults `f = 0.69/15 + 0.069/4 ≈ 0.06325` (≈ **6.325%** of balance per mint in EV when `s = 1`).
+
+**Target EV per mint:** 
+
+- `τ × avgPriceEMA`, where `τ = TAU_BIPS/10_000 = 0.70`.
+
+**Scale factor** (computed on a chosen balance `B`):
+
+- `s = min(1, (τ × avgPriceEMA) / (B × f) )`.
+
+**Scaled bips** used for calculating rewards: 
+
+- `bigBips = s × BIG_BASE_BIPS`
+- `smallBips = s × SMALL_BASE_BIPS`.
+
+### Why this works
+
+Here's how it all comes together to keep rewards pegged to demand, based on recent mint activity:
+
+- **EV matching.** Given balance `B`, the expected reward next mint is `EV_payout = B × s × f = min( τ × avgPriceEMA, B × f )`. In the usual case where `B > (τ × avgPriceEMA)/f`, the controller achieves `EV_payout ≈ τ × avgPriceEMA` **independent of B**.
+- **Contract balance growth in expectation.** A minter pays price `P`. Long-run expected drain caused by that mint is `≈ τ × avgPriceEMA`. So the balance drifts upward by `ΔB_expected ≈ P − τ × avgPriceEMA`. When prices are steady so that `P ≈ avgPriceEMA`, we get `ΔB_expected ≈ (1 − τ) × avgPriceEMA = 0.30 × avgPriceEMA`. That is: **~30% of the typical mint price accumulates in the contract** on each mint in expectation, despite regular randomized rewards.
+- **Auto-stabilization under low demand.** If demand softens and price declines, `avgPriceEMA` follows it down (EMA 1/8). The target EV shrinks proportionally, so the controller **reduces** rewards, allowing the contract balance to keep growing (or decay much more slowly) until demand returns.
+- **Liquidity safety.** When the balance is very low, `s` caps at `1`, and EV becomes `B × f` — the most the system will expect to pay out. Claims themselves also scale off the **current** pre-claim balance, so the contract never promises what it can’t afford.
+
+### Threshold intuition
+
+The boundary between the capped and matched regimes is at `B_threshold = (τ × avgPriceEMA) / f`. With defaults and `avgPriceEMA = 0.001 ETH`, `B_threshold ≈ 0.0007 / 0.06325 ≈ 0.0111 ETH`. Above ~0.011 ETH in the contract balance, the controller is in EV-matching mode.
+
+### How Rewards are calculated (hit cases)
+
+Let `B` be the balance used for calculation.
+
+- **Preview during an auction (hypothetical):**
+  - Uses `balanceAfterMint = address(this).balance + getCurrentPrice()`.
+  - Computes `(bigTotal, smallTotal)` = `balanceAfterMint × (scaled bips)/10_000`.
+  - Splits each win into `(minter, randomHolder, owner)` shares of **50/10/10 over 70 parts**:
+    - Minter: `50/70 ≈ 71.43%`
+    - Random holder: `10/70 ≈ 14.29%`
+    - Owner: `10/70 ≈ 14.29%`
+- **At claim time (actual):**
+  - Uses the **current balance** `B = address(this).balance` at the moment of claim.
+  - Recomputes `s` and bips; payout = `B × (scaled bips)/10_000`.
+  - Pays the three parties and emits `RewardSent`.
+
+**Implication.** If other mints/claims happened between mint and claim, the claimant’s absolute amounts float up/down with `B` and `s` — but the _EV at the time of mint_ was already accounted for by the controller logic.
+
+### Worked Numeric Example (Based on Dev Defaults)
+
+Assume just before claim: `B = 0.020 ETH`, `avgPriceEMA = 0.001 ETH`, `τ = 0.70`, `f ≈ 0.06325`.
+
+1. Scale: `s = (0.0007) / (0.020 × 0.06325) ≈ 0.553`.
+2. Scaled bips: `bigBips ≈ 6900 × 0.553 ≈ 3815`, `smallBips ≈ 690 × 0.553 ≈ 381`.
+3. If **Big** hit: reward ≈ `0.020 × 3815 / 10_000 = 0.00763 ETH`.
+   - Split: `minter ≈ 0.00545`, `random ≈ 0.00109`, `owner ≈ 0.00109`.
+4. If **Small** hit: reward ≈ `0.020 × 381 / 10_000 = 0.000762 ETH`.
+5. **EV check:** `0.00763/15 + 0.000762/4 ≈ 0.000699 ETH ≈ τ × avgPriceEMA = 0.0007 ETH`.
+
+### Economic Goals & Properties
+
+- **Bounded expected drain:** `EV_payout ≤ τ × avgPriceEMA`, with strict `<` when `s` is capped at `1`.
+- **Pot growth:** When prices are roughly steady, expected growth per mint is about `(1 − τ) × avgPriceEMA` (30% with defaults).
+- **Never-overpay:** Actual rewards are fractions of **current** balance; if `B = 0`, claims revert via `payout > 0` requirement.
+- **Demand adaptive:** Lower demand → lower `avgPriceEMA` → lower target EV → slower drain.
+- **Distribution fairness:** Independent draws for Big and Small (Small only evaluated if Big misses); random holder drawn from the historical supply snapshot at mint.
